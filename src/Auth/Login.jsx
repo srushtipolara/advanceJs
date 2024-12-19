@@ -1,53 +1,83 @@
-import {Alert, Button, Card, Col, Form, Row} from "react-bootstrap";
-import {useFormik} from "formik";
+import {Alert, Card, Col, Form, Row} from "react-bootstrap";
+import {Formik} from "formik";
 import {object, string} from "yup";
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useState} from "react";
+import {useDispatch} from "react-redux";
+import {userLogin} from "../Reducre/Login/reducer";
+import emailjs from "@emailjs/browser"
+import {CustomBtn, FormEmailInputField, FormPasswordInputField} from "./FormField";
+import {getCookie} from "../Common/Cookie";
 
 const Login = () => {
 
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const [showErrorMsg, setShowErrorMsg] = useState(false)
-    const [showPassword, setShowPassword] = useState(false)
-    let getUSer = JSON.parse(sessionStorage.getItem("user"));
+
+    let getUser = getCookie('user');
 
     const handleCloseErrorMsg = () => {
         setShowErrorMsg(false)
     }
 
-    const handleShowPassword = () => {
-        setShowPassword(!showPassword)
+    const generatedOpt = () => {
+        let num = '0123456789'
+        let otp = ''
+        for (let i = 0; i < 4; i++) {
+            otp += Math.floor(Math.random() * num.length)
+        }
+        return otp;
     }
 
-    const formik = useFormik({
-        enableReinitialize: true,
-        initialValues: {
-            email: getUSer?.email || "",
-            password: atob(getUSer?.password) || ""
-        },
-        validationSchema: object({
-            email: string().email().required(),
-            password: string().required()
-        }),
-        onSubmit: (value) => {
-            if (getUSer.email === value.email && getUSer.password === btoa(value.password)) {
-                localStorage.setItem("authUser", JSON.stringify({...value, password: btoa(value.password)}))
-                setTimeout(() => {
-                    navigate("/");
-                    setShowErrorMsg(false);
-                }, 1000)
-            } else {
-                setShowErrorMsg(true)
-            }
-            value.resetForm();
+
+    const handleSignInWithEmail = () => {
+        const generateOpt = generatedOpt()
+        const templateParams = {
+            email: getUser?.email,
+            otp: generateOpt,
+            from_name: getUser?.name,
+            message: "You Have login with this website"
         }
+        emailjs.send("service_e9uwwbj", "template_53y506o", templateParams, "inzu2xhcbmke-suVE")
+            .then((res) => {
+                console.log("Email sent successfully!", res);
+                if (res.status === 200) {
+                    navigate("/");
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
+    const initialValues = {
+        email: getUser?.email || "",
+        password: atob(getUser?.password) || ""
+    }
+
+    const validationSchema = object({
+        email: string().email().required(),
+        password: string().required()
     })
 
-    useEffect(() => {
-        setTimeout(() => {
-            setShowPassword(false)
-        }, 100)
-    }, [showPassword])
+    const handleSubmit = (value, actions) => {
+        console.log({value})
+        if (getUser.email === value.email && getUser.password === btoa(value.password)) {
+            localStorage.setItem("authUser", JSON.stringify({
+                ...value,
+                password: btoa(value.password)
+            }))
+            dispatch(userLogin({...value, password: btoa(value.password)}))
+            setTimeout(() => {
+                navigate("/list");
+                setShowErrorMsg(false);
+            }, 1000)
+        } else {
+            setShowErrorMsg(true)
+        }
+        actions.resetForm();
+    }
 
     return (
         <>
@@ -61,52 +91,28 @@ const Login = () => {
                         </Card.Header>
 
                         <Card.Body>
+                            <Formik
+                                enableReinitialize={true}
+                                initialValues={initialValues}
+                                validationSchema={validationSchema}
+                                onSubmit={handleSubmit}
+                            >
+                                <Form onSubmit={(event) => event.preventDefault()}>
+                                    <FormEmailInputField/>
+                                    <FormPasswordInputField/>
+                                    <div className={'d-flex flex-column'}>
 
-                            <Form onSubmit={formik.handleSubmit}>
-                                <div className={'mb-3'}>
-                                    <Form.Label htmlFor={'email'} column={true}>Email</Form.Label>
-                                    <Form.Control type={'email'} name={'email'} value={formik.values.email}
-                                                  onChange={formik.handleChange} onBlur={formik.handleBlur}
-                                                  isInvalid={formik.touched.email && !!formik.errors.email}/>
-
-                                    {
-                                        formik.touched.email && formik.errors.email ?
-                                            <Form.Control.Feedback
-                                                type={'invalid'}> {formik.errors.email}</Form.Control.Feedback>
-                                            : null
-                                    }
-                                </div>
-                                <div>
-                                    <Form.Label column={true}>Password</Form.Label>
-                                    <Form.Control type={showPassword ? "text" : 'password'} name={'password'}
-                                                  value={formik.values.password}
-                                                  onChange={formik.handleChange} onBlur={formik.handleBlur}
-                                                  isInvalid={formik.touched.password && !!formik.errors.password}
-                                    />
-                                    <div className={'d-flex gap-2 mt-2 text-secondary justify-content-between'}>
-                                        <div className={'d-flex gap-2'}>
-                                            <Form.Check type={'checkbox'} checked={showPassword}
-                                                        onChange={handleShowPassword}/>
-                                            <p>show Password</p>
-                                        </div>
-                                        <a href={'/forget-password'} className={'text-secondary'}>Forgot your
-                                            Password</a>
+                                        <CustomBtn title={'Login'} variant={'secondary'} className={'w-100 mx-auto'}/>
+                                        <p className={'mt-2 d-flex justify-content-center gap-1'}>You don't have
+                                            account? <a
+                                                href={'/signup'} className={'text-danger'}> Sign up</a></p>
                                     </div>
+                                </Form>
+                            </Formik>
 
-                                    {
-                                        formik.touched.password && formik.errors.password ?
-                                            <Form.Control.Feedback
-                                                type={'invalid'}> {formik.errors.password}</Form.Control.Feedback>
-                                            : null
-                                    }
-                                </div>
-
-
-                                <Button type={'submit'} variant={'secondary w-100'}>Login</Button>
-
-                                <p className={'mt-2 d-flex justify-content-end gap-1'}>You don't have account? <a
-                                    href={'/signup'} className={'text-danger'}> Sign up</a></p>
-                            </Form>
+                            <hr/>
+                            <p className={'d-flex justify-content-center pe-auto'}
+                               onClick={() => handleSignInWithEmail()}> SignIn with Email</p>
                         </Card.Body>
                     </Card>
                 </Col>

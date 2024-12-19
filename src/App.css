@@ -28,6 +28,24 @@
   color: #61dafb;
 }
 
+.row {
+  height: 100%;
+  align-content: center;
+
+  .card {
+    background: #FFF;
+    border-radius: 10px;
+    border: 1px solid #FFF;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    .card-header {
+      background: #FFF;
+    }
+  }
+
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

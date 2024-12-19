@@ -1,48 +1,43 @@
 import {Button, Card, Col, Form, Row} from "react-bootstrap"
 import {useFormik} from "formik";
-import {number, object, string} from "yup"
-import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useMemo, useState} from "react";
+import {array, number, object, string} from "yup"
+import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {createNewList} from "../Reducre/list/reducer";
 
 const CreateUpdateEmployeeList = () => {
 
-    const params = useParams()
     const navigate = useNavigate()
-    const [preEmployeeList, setPreEmployeeList] = useState([]);
+    const dispatch = useDispatch()
 
-    let employeeList = Array.isArray(preEmployeeList) ? preEmployeeList : [];
-    const IsEditEmployeeList = useMemo(() => params?.id ? (preEmployeeList || [])?.find((item) => item?.id?.toString() === params?.id?.toString()) : null, [params?.id, preEmployeeList]);
-    console.log("IsEditEmployeeList", IsEditEmployeeList)
     const handleEmployeeListValidation = () => object({
         employName: string().required("Employee Name is Requires"),
         employDesignation: string().required("Employee Designation is Requires"),
         employSalary: number().required("Employee Salary is Requires"),
         employLocation: string().required("Employee Location is Requires"),
         employeeJoinedDate: string().required("Employee Join Date is Requires"),
+        employeeSkills: array().of(object({
+            skill: string().required("Employee Skills is Requires")
+        }))
     });
+
+    const defaultSkill = {skill: ''}
+
 
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
-            id: IsEditEmployeeList?.id || Math.floor(Math.random() * 100),
-            employName: IsEditEmployeeList !== undefined ? IsEditEmployeeList?.employName : '',
-            employDesignation: (IsEditEmployeeList !== undefined && IsEditEmployeeList?.employDesignation) || '',
-            employSalary: IsEditEmployeeList?.employSalary || '',
-            employLocation: IsEditEmployeeList?.employLocation || '',
-            employeeJoinedDate: IsEditEmployeeList?.employeeJoinedDate || '',
+            id: '',
+            employName: '',
+            employDesignation: '',
+            employSalary: '',
+            employLocation: '',
+            employeeJoinedDate: '',
+            employeeSkills: [defaultSkill],
         },
         validationSchema: handleEmployeeListValidation(),
         onSubmit: (value, action) => {
-            console.log({value})
-            if (params.id) {
-                const updateItem = employeeList.findIndex((item) => item.id === value.id)
-                if (updateItem >= 0) {
-                    employeeList[updateItem] = value
-                }
-            } else {
-                employeeList.push(value)
-            }
-            localStorage.setItem("employeeList", JSON.stringify(employeeList));
+            dispatch(createNewList(value))
             navigate('/')
 
             action.resetForm({
@@ -50,15 +45,16 @@ const CreateUpdateEmployeeList = () => {
                 employDesignation: '',
                 employSalary: '',
                 employLocation: '',
-                employeeJoinedDate: ''
+                employeeJoinedDate: '',
+                employeeSkills: []
             })
         }
     })
 
-    useEffect(() => {
-        const employeeDetails = JSON.parse(localStorage.getItem("employeeList") || "[]");
-        setPreEmployeeList(employeeDetails);
-    }, []);
+    const handleAddSkills = () => {
+        const newSkills = {...defaultSkill, skill: ''}
+        formik.setFieldValue('employeeSkills', formik.values.employeeSkills.concat(newSkills))
+    }
 
     return (
         <>
@@ -67,15 +63,16 @@ const CreateUpdateEmployeeList = () => {
 
                     <Card>
                         <Card.Header>
-                            <h4>{params?.id ? "Update Employee List" : "Create Employee List"}</h4>
+                            <h4>Create Employee List</h4>
                         </Card.Header>
                         <Card.Body>
-                            <Form onSubmit={formik.handleSubmit} autoCapitalize={'off'}>
+                            <Form onSubmit={formik.handleSubmit}>
                                 <div className={'mb-2'}>
                                     <Form.Label htmlFor={'employName'} column={true}>Name</Form.Label>
                                     <Form.Control type={'text'} name={'employName'}
                                                   value={formik.values.employName || ''}
                                                   onChange={formik.handleChange}
+                                                  onBlur={formik.handleBlur}
                                                   isInvalid={formik.touched.employName && !!formik.errors.employName}/>
                                     {
                                         (formik.errors.employName && formik.touched.employName) ?
@@ -90,6 +87,7 @@ const CreateUpdateEmployeeList = () => {
                                     <Form.Control type={'text'} name={'employDesignation'}
                                                   value={formik.values.employDesignation}
                                                   onChange={formik.handleChange}
+                                                  onBlur={formik.handleBlur}
                                                   isInvalid={!!formik.values.employDesignation}/>
                                     {
                                         (formik.errors.employDesignation && formik.touched.employDesignation) ?
@@ -104,6 +102,7 @@ const CreateUpdateEmployeeList = () => {
                                     <Form.Control type={'number'} name={'employSalary'}
                                                   value={formik.values.employSalary}
                                                   onChange={formik.handleChange}
+                                                  onBlur={formik.handleBlur}
                                                   isInvalid={!!formik.values.employSalary}/>
                                     {
                                         (formik.errors.employSalary && formik.touched.employSalary) ?
@@ -118,6 +117,7 @@ const CreateUpdateEmployeeList = () => {
                                     <Form.Control type={'text'} name={'employLocation'}
                                                   value={formik.values.employLocation}
                                                   onChange={formik.handleChange}
+                                                  onBlur={formik.handleBlur}
                                                   isInvalid={!!formik.values.employLocation}/>
                                     {
                                         (formik.errors.employLocation && formik.touched.employLocation) ?
@@ -147,8 +147,44 @@ const CreateUpdateEmployeeList = () => {
                                     }
                                 </div>
 
+                                <div className={'mb-2'}>
+                                    <div className={'d-flex justify-content-between mb-2'}>
+                                        <Form.Label column={true} htmlFor={'skills'}>Skills</Form.Label>
+                                        <Button type={'button'} className={'btn btn-secondary'}
+                                                onClick={handleAddSkills}>Add
+                                            skills
+                                        </Button>
+                                    </div>
+
+                                    {
+                                        (formik.values.employeeSkills || [])?.map((item, index) => {
+                                            const touchedSkill = formik.touched?.employeeSkills?.[index]?.skill;
+                                            const errorSkill = formik.errors?.employeeSkills?.[index]?.skill;
+
+                                            return <div className={'mb-2'} key={index}>
+                                                <Form.Control type={'text'}
+                                                              name={`formik.values.employeeSkills[${index}].skill`}
+                                                              value={formik.values.employeeSkills[index].skill}
+                                                              onChange={(event) => {
+                                                                  const {value} = event.target;
+                                                                  formik.setFieldValue(`employeeSkills[${index}].skill`, value)
+                                                              }}
+                                                              onBlur={formik.handleBlur}
+                                                              isInvalid={touchedSkill && !!errorSkill}
+                                                />
+                                                {
+                                                    touchedSkill && errorSkill ?
+                                                        <Form.Control.Feedback type={'invalid'}
+                                                                               className={'d-flex'}>{errorSkill}</Form.Control.Feedback> : null
+                                                }
+                                            </div>
+                                        })
+                                    }
+
+                                </div>
+
                                 <Button type={'submit'}
-                                        className={'w-50 btn btn-success float-end'}>{params?.id ? "Update" : "Save"}</Button>
+                                        className={'w-50 btn btn-success float-end'}>Save</Button>
                             </Form>
                         </Card.Body>
                     </Card>

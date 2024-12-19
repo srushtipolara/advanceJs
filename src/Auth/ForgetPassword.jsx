@@ -1,45 +1,35 @@
-import {Alert, Button, Card, Col, Form, Row} from "react-bootstrap";
-import {useEffect, useState} from "react";
-import {useFormik} from "formik";
+import {Alert, Card, Col, Form, Row} from "react-bootstrap";
+import {useState} from "react";
+import {Formik} from "formik";
 import {useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {userLogin} from "../Reducre/Login/reducer";
+import {CustomBtn, FormPasswordInputField} from "./FormField";
 
 const ForgetPassword = () => {
     const navigate = useNavigate()
-    const [showPassword, setShowPassword] = useState(false)
+    const dispatch = useDispatch()
     const [showAlertMsg, setShowAlertMsg] = useState(false)
     const user = JSON.parse(sessionStorage.getItem("user"))
 
     const handleCloseAlertMsg = () => {
         setShowAlertMsg(!showAlertMsg)
     }
-
-    const handleShowPassword = () => {
-        setShowPassword(!showPassword)
+    const initialValues = {
+        password: ""
     }
-
-    const formik = useFormik({
-        enableReinitialize: true,
-        initialValues: {
-            password: ""
-        },
-        onSubmit: (value, action) => {
-            sessionStorage.setItem("user", JSON.stringify({...user, password: btoa(value.password)}))
-            handleCloseAlertMsg()
-            setTimeout(() => {
-                navigate("/login");
-                handleCloseAlertMsg()
-                action.resetForm({
-                    password: ""
-                })
-            }, 1000)
-        }
-    })
-
-    useEffect(() => {
+    const onSubmit = (value, action) => {
+        dispatch(userLogin({...user, password: btoa(value.password)}))
+        sessionStorage.setItem("user", JSON.stringify({...user, password: btoa(value.password)}))
+        handleCloseAlertMsg()
         setTimeout(() => {
-            setShowPassword(false)
-        }, 100)
-    }, [showPassword])
+            navigate("/login");
+            handleCloseAlertMsg()
+            action.resetForm({
+                password: ""
+            })
+        }, 1000)
+    }
 
     return (
         <>
@@ -53,23 +43,15 @@ const ForgetPassword = () => {
                             <h4>Forgot Password</h4>
                         </Card.Header>
                         <Card.Body>
-                            <Form className={'mt-1'} onSubmit={formik.handleSubmit} autoComplete={'off'}>
-                                <div className={'mb-2'}>
-                                    <Form.Label column={true}>New Password</Form.Label>
-                                    <Form.Control type={showPassword ? "text" : 'password'} name={'password'}
-                                                  value={formik.values.password}
-                                                  onChange={formik.handleChange} onBlur={formik.handleBlur}
-                                    />
-                                    <div className={'d-flex gap-2 mt-2 text-secondary'}>
-                                        <Form.Check type={'checkbox'} checked={showPassword}
-                                                    onChange={handleShowPassword}/>
-                                        <p>show Password</p>
-                                    </div>
-                                </div>
 
-                                <Button type={'submit'} variant={'success'} className={'w-100'}>Change Password</Button>
+                            <Formik initialValues={initialValues} onSubmit={onSubmit}>
+                                <Form className={'mt-1'} onSubmit={(event) => event.preventDefault()}
+                                      autoComplete={'off'}>
+                                    <FormPasswordInputField/>
+                                    <CustomBtn title={'Change Password'} variant={'success'} className={'w-100'}/>
+                                </Form>
+                            </Formik>
 
-                            </Form>
                         </Card.Body>
 
                     </Card>
