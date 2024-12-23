@@ -27,8 +27,8 @@ const Signup = () => {
 
     const validationSchema = object({
         name: string().required(),
-        email: string().email().required(),
-        password: string().required(),
+        email: string().matches(/^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+.[a-zA-z]{2,}/, 'Invalid Email').required(),
+        password: string().matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*-+/*(),.])/).min(5).required(),
         gender: string().required()
     })
 

@@ -53,12 +53,12 @@ const Login = () => {
 
     const initialValues = {
         email: getUser?.email || "",
-        password: atob(getUser?.password) || ""
+        password: getUser?.password ? atob(getUser?.password) : ""
     }
 
     const validationSchema = object({
-        email: string().email().required(),
-        password: string().required()
+        email: string().matches(/^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+.[a-zA-z]{2,}/, 'Invalid Email').required(),
+        password: string().matches(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*-+/*(),.])/).min(5).required(),
     })
 
     const handleSubmit = (value, actions) => {

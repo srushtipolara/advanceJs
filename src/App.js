@@ -14,7 +14,8 @@ function App() {
     useEffect(() => {
         if (!authUser) {
             navigate('/login')
-        } else if (!user) {
+        }
+        if (!user) {
             navigate('/signup')
         }
     }, [authUser, navigate, user]);

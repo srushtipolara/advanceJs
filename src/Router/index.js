@@ -3,6 +3,7 @@ import Signup from "../Auth/Signup";
 import ForgetPassword from "../Auth/ForgetPassword";
 import ListRoute from "../Crud/ListRoute";
 import Todo from "../Todo";
+import CallBack from "../advanceJs/CallBack";
 
 export const publicRoutes = [
     {
@@ -22,7 +23,7 @@ export const publicRoutes = [
 export const authProtectedRouter = [
     {
         path: '/',
-        Component: ListRoute,
+        Component: CallBack,
     },
     {
         path: "/list/*",
