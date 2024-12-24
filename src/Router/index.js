@@ -23,7 +23,7 @@ export const publicRoutes = [
 export const authProtectedRouter = [
     {
         path: '/',
-        Component: CallBack,
+        Component: ListRoute,
     },
     {
         path: "/list/*",

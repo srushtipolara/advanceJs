@@ -1,11 +1,12 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {deleteList} from "../Reducre/list/reducer";
 import {Badge, Col, Row} from "react-bootstrap";
 import moment from "moment";
 import UpdateEmployeeList from "./UpdateEmployeList";
 import DeleteModal from "./DeleteModal";
+import StoreDataContext from "../Common/CreateContext";
 
 const List = () => {
 
@@ -18,9 +19,10 @@ const List = () => {
     const [ListDetails, setListDetails] = useState([])
     const [sort, setSort] = useState({key: '', order: 'asc'})
     const [pageNum, setPageNum] = useState(1)
-    const list = useSelector(state => state.EmployeeList.list);
+    const {setFormContext} = useContext(StoreDataContext)
+    const formContext = useSelector(state => state.EmployeeList.list);
     let Page_size = 2;
-    let total_page = Math.ceil(list.length / Page_size);
+    let total_page = Math.ceil(formContext.length / Page_size);
     const end = useMemo(() => Page_size * pageNum, [pageNum, Page_size]);
     const start = useMemo(() => end - Page_size, [end, Page_size]);
 
@@ -39,6 +41,8 @@ const List = () => {
 
     const onHandleDeleteEmployeeDetails = () => {
         dispatch(deleteList(isDeleteId))
+        const deleteFormContext = formContext.filter((item) => item.id !== isDeleteId)
+        setFormContext(deleteFormContext)
         setIsDeleteModalShow(false)
     }
 
@@ -60,20 +64,20 @@ const List = () => {
 
     useEffect(() => {
         if (search.length > 0) {
-            const keySearch = Object.keys(list[0] || {});
+            const keySearch = Object.keys(formContext[0] || {});
 
-            const filteredList = list?.filter((item) =>
+            const filteredList = formContext?.filter((item) =>
                 keySearch?.some((key) =>
                     item[key]?.toString()?.toLowerCase()?.includes(search?.toLowerCase())
                 )
             );
             setListDetails(filteredList)
         } else {
-            setListDetails(list)
+            setListDetails(formContext)
         }
-    }, [search, list]);
+    }, [search, formContext]);
 
-    useEffect(() => setListDetails(list), [list]);
+    useEffect(() => setListDetails(formContext), [formContext]);
 
     return (
         <div>

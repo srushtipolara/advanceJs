@@ -1,17 +1,19 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import {useFormik} from "formik";
 import {updateList} from "../Reducre/list/reducer";
-import {useMemo} from "react";
+import {useContext, useMemo} from "react";
 import {useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {array, number, object, string} from "yup";
+import StoreDataContext from "../Common/CreateContext";
 
 const UpdateEmployeeList = ({id}) => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const {formContext, setFormContext} = useContext(StoreDataContext)
     const preEmployeeList = useSelector(state => state.EmployeeList.list)
-    const IsEditEmployeeList = useMemo(() => id ? (preEmployeeList || [])?.find((item) => item?.id?.toString() === id.toString()) : null, [id, preEmployeeList]);
+    const IsEditEmployeeList = useMemo(() => id ? (formContext || [])?.find((item) => item?.id?.toString() === id.toString()) : null, [id, formContext]);
 
     const handleEmployeeListValidation = () => object({
         employName: string().required("Employee Name is Requires"),
@@ -38,6 +40,11 @@ const UpdateEmployeeList = ({id}) => {
         validationSchema: handleEmployeeListValidation(),
         onSubmit: (value, action) => {
             dispatch(updateList(value))
+            const updateFormContext = formContext.findIndex((item) => item.id === value.id)
+            if (updateFormContext >= 0) {
+                formContext[updateFormContext] = value
+            }
+            setFormContext(formContext)
             navigate('/')
 
             action.resetForm({

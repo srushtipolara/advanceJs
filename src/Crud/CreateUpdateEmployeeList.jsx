@@ -4,11 +4,14 @@ import {array, number, object, string} from "yup"
 import {useNavigate} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {createNewList} from "../Reducre/list/reducer";
+import {useContext} from "react";
+import StoreDataContext from "../Common/CreateContext";
 
 const CreateUpdateEmployeeList = () => {
 
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const {setFormContext} = useContext(StoreDataContext)
 
     const handleEmployeeListValidation = () => object({
         employName: string().required("Employee Name is Requires"),
@@ -38,6 +41,7 @@ const CreateUpdateEmployeeList = () => {
         validationSchema: handleEmployeeListValidation(),
         onSubmit: (value, action) => {
             dispatch(createNewList(value))
+            setFormContext([{...value, id: Math.floor(Math.random() * 1000)}])
             navigate('/')
 
             action.resetForm({
@@ -128,7 +132,8 @@ const CreateUpdateEmployeeList = () => {
                                 </div>
 
                                 <div className={'mb-2'}>
-                                    <Form.Label htmlFor={'employeeJoinedDate'} column={true}>Joined Date</Form.Label>
+                                    <Form.Label htmlFor={'employeeJoinedDate'} column={true}>Joined
+                                        Date</Form.Label>
                                     <Form.Control
                                         type="date"
                                         id="employeeJoinedDate"
@@ -191,7 +196,6 @@ const CreateUpdateEmployeeList = () => {
                 </Col>
 
             </Row>
-
         </>
     )
 }
