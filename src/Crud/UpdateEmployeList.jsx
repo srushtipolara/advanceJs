@@ -1,18 +1,18 @@
 import {Button, Form, Modal} from "react-bootstrap";
 import {useFormik} from "formik";
 import {updateList} from "../Reducre/list/reducer";
-import {useContext, useMemo} from "react";
+import {useMemo} from "react";
 import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {array, number, object, string} from "yup";
-import StoreDataContext from "../Common/CreateContext";
+import {useContextStore} from "../Common/CreateContext";
 
 const UpdateEmployeeList = ({id}) => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const {formContext, setFormContext} = useContext(StoreDataContext)
-    const preEmployeeList = useSelector(state => state.EmployeeList.list)
+    const {formContext, setFormContext} = useContextStore()
+    // const preEmployeeList = useSelector(state => state.EmployeeList.list)
     const IsEditEmployeeList = useMemo(() => id ? (formContext || [])?.find((item) => item?.id?.toString() === id.toString()) : null, [id, formContext]);
 
     const handleEmployeeListValidation = () => object({

@@ -1,12 +1,12 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useContext, useEffect, useMemo, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useEffect, useMemo, useState} from "react";
+import {useDispatch} from "react-redux";
 import {deleteList} from "../Reducre/list/reducer";
 import {Badge, Col, Row} from "react-bootstrap";
 import moment from "moment";
 import UpdateEmployeeList from "./UpdateEmployeList";
 import DeleteModal from "./DeleteModal";
-import StoreDataContext from "../Common/CreateContext";
+import {useContextStore} from "../Common/CreateContext";
 
 const List = () => {
 
@@ -19,8 +19,9 @@ const List = () => {
     const [ListDetails, setListDetails] = useState([])
     const [sort, setSort] = useState({key: '', order: 'asc'})
     const [pageNum, setPageNum] = useState(1)
-    const {setFormContext} = useContext(StoreDataContext)
-    const formContext = useSelector(state => state.EmployeeList.list);
+    const {formContext, setFormContext} = useContextStore()
+    console.log("formContext ==>", formContext)
+    // const list = useSelector(state => state.EmployeeList.list);
     let Page_size = 2;
     let total_page = Math.ceil(formContext.length / Page_size);
     const end = useMemo(() => Page_size * pageNum, [pageNum, Page_size]);
