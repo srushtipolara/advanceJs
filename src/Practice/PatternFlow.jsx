@@ -12,10 +12,10 @@ const PatternFlow = () => {
                 <Card.Header>Upper left triangle</Card.Header>
                 <Card.Body>
                    <pre>
-                        {Array.from({length: num}, (_, i) => str.repeat(i + 1)).join('\n')}
+                        {/*{Array.from({length: num}, (_, i) => str.repeat(i + 1)).join('\n')}*/}
                        <br/>
                        <hr/>
-                       {Array.from({length: num}, (_, i) => " ".repeat(i) + str.repeat(num - i)).join('\n')}
+                       {/*{Array.from({length: num}, (_, i) => " ".repeat(i) + str.repeat(num - i)).join('\n')}*/}
                        <br/>
                        {/*{Array.from({length: num}, (_, i) => ' '?.repeat(num - (i + 1)) + str.repeat(i + 1).split('').join('')).join('\n')}*/}
                    </pre>

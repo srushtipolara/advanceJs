@@ -20,7 +20,6 @@ const List = () => {
     const [sort, setSort] = useState({key: '', order: 'asc'})
     const [pageNum, setPageNum] = useState(1)
     const {formContext, setFormContext} = useContextStore()
-    console.log("formContext ==>", formContext)
     // const list = useSelector(state => state.EmployeeList.list);
     let Page_size = 2;
     let total_page = Math.ceil(formContext.length / Page_size);
