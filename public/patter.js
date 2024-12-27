@@ -712,16 +712,5 @@ console.log(star16)
 
 // =====================================================
 
-let row2 = 4;
-let star17 = "";
-for (let i = 1; i <= row2; i++) {
-    for (let j = 1; j <= i - row2; j++) {
-        star17 += " ";
-    }
-    for (let k = 1; k <= 2 * i - 1; k++) {
-        star17 += "*";
-    }
-    star17 += "\n";
-}
-
-console.log(star17, "star17")
+// /^[a-zA-Z0-9]+@[a-zA-Z]+.[A-Za-z]{2,}/
+// /[a-zA-Z]+(?=.*[@.#*-+%$!&^_,])[0-9]/

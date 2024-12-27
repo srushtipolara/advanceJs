@@ -5,6 +5,7 @@ import ListRoute from "../Crud/ListRoute";
 import Todo from "../Todo";
 import AdvanceJs from "../advanceJs";
 import Practice from "../Practice";
+import Array from "../Array";
 
 export const publicRoutes = [
     {
@@ -39,7 +40,11 @@ export const authProtectedRouter = [
         Component: AdvanceJs,
     },
     {
-        path : "/practice/*",
+        path: "/practice/*",
         Component: Practice,
+    },
+    {
+        path: "/array",
+        Component: Array,
     }
 ]

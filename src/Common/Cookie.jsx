@@ -11,6 +11,7 @@ const getCookie = (username) => {
     const cookie = document.cookie
         .split('; ')
         .find((cookie) => cookie.startsWith(`${username}=`));
+    console.log("cookie", cookie)
     const value = cookie?.replace(`${username}=`, '')
     try {
         return value ? JSON.parse(value) : null;
