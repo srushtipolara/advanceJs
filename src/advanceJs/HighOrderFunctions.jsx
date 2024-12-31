@@ -3,22 +3,27 @@ import Reduce from "./Reduce";
 import Call from "./Call";
 import Bind from "./Bind";
 
+const HighOrder = () => {
+    return (
+        <div>
+            <h6>High-Order Functions</h6>
+            <ol>
+                <li>Reduce()</li>
+                <li>Map()</li>
+                <li>Filter()</li>
+                <li>Sort()</li>
+            </ol>
+        </div>
+    )
+}
+
 const HighOrderFunctions = () => {
     return (
-        // <div>
-        //     <h6>High-Order Functions</h6>
-        //     <ol>
-        //         <li>Reduce()</li>
-        //         <li>Map()</li>
-        //         <li>Filter()</li>
-        //         <li>Sort()</li>
-        //     </ol>
-        // </div>
         <Routes>
-            <Route path={''} element={<></>}/>
-            <Route path={'/reduce'} element={<Reduce/>}/>
-            <Route path={'/map'} element={<></>}/>
-            <Route path={'/filter'} element={<></>}/>
+            <Route path={''} element={<HighOrder/>}/>
+            <Route path={'/reduces'} element={<Reduce/>}/>
+            <Route path={'/map'} element={<HighOrder/>}/>
+            <Route path={'/filter'} element={<HighOrder/>}/>
             <Route path={'/call'} element={<Call/>}/>
             <Route path={'/bind'} element={<Bind/>}/>
         </Routes>

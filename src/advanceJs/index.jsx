@@ -24,7 +24,7 @@ const AdvanceJs = () => {
                 <Route path={'/event-loops'} element={<EventLoops/>}/>
                 <Route path={'/callback'} element={<CallBack/>}/>
                 <Route path={'/functional-programming'} element={<FunctionalProgramming/>}/>
-                <Route path={'/high-order-functions'} element={<HighOrderFunctions/>}/>
+                <Route path={'/high-order-functions/*'} element={<HighOrderFunctions/>}/>
                 <Route path={'/generators'} element={<Generators/>}/>
                 <Route path={'/hoisting'} element={<Hoisting/>}/>
                 <Route path={'/iifes'} element={<IIFEs/>}/>

@@ -4,7 +4,6 @@ import ForgetPassword from "../Auth/ForgetPassword";
 import ListRoute from "../Crud/ListRoute";
 import Todo from "../Todo";
 import AdvanceJs from "../advanceJs";
-import Practice from "../Practice";
 import Array from "../Array";
 
 export const publicRoutes = [
@@ -38,10 +37,6 @@ export const authProtectedRouter = [
     {
         path: "/advance-js/*",
         Component: AdvanceJs,
-    },
-    {
-        path: "/practice/*",
-        Component: Practice,
     },
     {
         path: "/array",

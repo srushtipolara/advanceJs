@@ -11,11 +11,6 @@ function App() {
     const authUser = JSON.parse(localStorage.getItem("authUser"));
     const user = getCookie("user");
 
-    window.addEventListener("beforeunload", () => {
-        console.log("Window is about to close. Clearing local storage.");
-        localStorage.clear();
-    });
-
     useEffect(() => {
         if (!authUser) {
             navigate('/login')
